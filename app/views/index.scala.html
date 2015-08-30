@@ -1,0 +1,32 @@
+@() <!DOCTYPE html>
+<html>
+  <head>
+    <title data-ng-bind="pageTitle"></title>
+    <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+    @*-- Add More CSS here -- *@
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+    <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("lib/angular-chart/angular-chart.css")">
+    <script data-main="@routes.Assets.versioned("javascripts/main.js")" type="text/javascript" src="@routes.Assets.versioned("lib/requirejs/require.js")"></script>
+  </head>
+  <body>
+    @*-- Header -- *@
+    <header class="navbar navbar-inverse navbar-static-top" role="navigation" ng-cloak>
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#ghb-main-nav-bar">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#/"><strong>Github Browser</strong></a>
+        </div>
+        <div class="navbar-collapse collapse" id="ghb-main-nav-bar">
+        </div>
+      </div>
+    </header>
+    @* -- Main Content -- *@
+    <div class="container" data-ng-cloak>
+      <div data-ng-view></div>
+    </div>
+  </body>
+</html>

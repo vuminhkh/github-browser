@@ -1,0 +1,64 @@
+<div class="row">
+  <div class="col-md-3">
+    <div class="well">
+      <form name="searchRepositoriesForm" role="form" ng-submit="search(searchKey)">
+        <fieldset>
+          <div class="form-group">
+            <input type="text" id="name" name="name" ng-model="searchKey"
+                   class="form-control"
+                   placeholder="Search GitHub for repositories">
+          </div>
+        </fieldset>
+        <button type="submit" id="searchsubmit" class="btn btn-success"><span class="fa fa-search"> Search</span>
+        </button>
+      </form>
+    </div>
+  </div>
+  <div class="col-md-9">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <span ng-show="searchInProgress">Search In Progress <i class="fa fa-spinner fa-spin"></i></span>
+
+        <div ng-show="!searchInProgress">Showing the <span class="badge">{{repositoriesPage.items.length || 0}}</span> most relevants for a total of <span
+            class="badge">{{repositoriesPage.total_count || 0}}</span>
+          repositories found
+        </div>
+      </div>
+
+      <div class="panel-body">
+        <div ng-if="repositoriesPage.items.length > 0" class="row">
+          <div class="col-md-12">
+            <ul class="list-group">
+              <li ng-repeat="repository in repositoriesPage.items" class="list-group-item ghb-media-item"
+                  ng-click="goToRepository(repository.owner.login, repository.name)">
+                <div class="media">
+                  <div class="pull-left" style="min-width: 75px; min-height: 70px;">
+                    <img ng-if="repository.owner.avatar_url" class="media-object" ng-src="{{repository.owner.avatar_url}}&s=200" height="100" width="100" />
+                    <i ng-if="!repository.owner.avatar_url" class="media-object fa fa-picture-o fa-4x"></i>
+                  </div>
+                  <div class="media-body">
+                    <h3 class="media-heading">{{repository.name}}</h3>
+
+                    <div>
+                      <p><strong>{{repository.full_name}}</strong></p>
+
+                      <p>{{repository.description}}</p>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div ng-if="!repositoriesPage.items || repositoriesPage.items.length <= 0" class="row">
+          <div class="col-md-12">
+            <div class="well">
+              <em ng-if="searchKey">No Repository Found</em>
+              <em ng-if="!searchKey">Enter criteria to search for repositories</em>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

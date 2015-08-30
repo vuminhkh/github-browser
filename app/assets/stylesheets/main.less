@@ -1,0 +1,70 @@
+@import "lib/bootstrap/less/bootstrap.less";
+@import "lib/font-awesome/less/font-awesome.less";
+
+@ghb-body-bg: #F1F0FF;
+@ghb-container-heading-bg: #EECD86;
+@ghb-container-bg: #ffffff;
+@ghb-container-border-color: darken(@ghb-container-heading-bg, 15%);
+@ghb-footer-bg: #C3C3E5;
+
+@fa-font-path: "../lib/font-awesome/fonts";
+@icon-font-path: "../lib/bootstrap/fonts/";
+
+@body-bg: #F1F0FF;
+body {
+  font-weight: 300;
+}
+
+@navbar-inverse-color: #777;
+@navbar-inverse-bg: #443266;
+@navbar-inverse-link-color: #fff;
+@navbar-inverse-link-hover-color: #ddd;
+@navbar-inverse-link-active-color: #bbb;
+@navbar-inverse-link-disabled-color: #999;
+@navbar-inverse-toggle-hover-bg: #ddd;
+@navbar-inverse-toggle-icon-bar-bg: #ccc;
+@navbar-inverse-toggle-border-color: #ddd;
+
+@panel-default-heading-bg: @ghb-container-heading-bg;
+@panel-default-border: @ghb-container-border-color;
+
+@well-bg: @ghb-container-bg;
+@well-border: @ghb-container-border-color;
+
+.ghb-click:hover {
+  cursor: pointer;
+}
+
+.ghb-media-item {
+  overflow: visible;
+}
+
+.ghb-media-item:hover {
+  cursor: pointer;
+  background: #f5f5f5;
+}
+
+.nav-tabs li.active a {
+  background-color: white;
+}
+
+.nav-tabs li a:hover {
+  background-color: white;
+  cursor: pointer;
+}
+
+.nav-tabs li.active a:hover {
+  background-color: white;
+  cursor: default;
+}
+
+.tab-pane {
+  background-color: #ffffff;
+  padding: 10px;
+  border: 1px solid #dddddd;
+  border-top-color: transparent;
+}
+/* AngularJS */
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+  display: none;
+}
