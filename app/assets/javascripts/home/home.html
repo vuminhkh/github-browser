@@ -19,9 +19,8 @@
       <div class="panel-heading">
         <span ng-show="searchInProgress">Search In Progress <i class="fa fa-spinner fa-spin"></i></span>
 
-        <div ng-show="!searchInProgress">Showing the <span class="badge">{{repositoriesPage.items.length || 0}}</span> most relevants for a total of <span
-            class="badge">{{repositoriesPage.total_count || 0}}</span>
-          repositories found
+        <div ng-show="!searchInProgress">
+          <span class="badge">{{repositoriesPage.total_count || 0}}</span> repositories found
         </div>
       </div>
 
@@ -37,17 +36,51 @@
                     <i ng-if="!repository.owner.avatar_url" class="media-object fa fa-picture-o fa-4x"></i>
                   </div>
                   <div class="media-body">
-                    <h3 class="media-heading">{{repository.name}}</h3>
-
-                    <div>
-                      <p><strong>{{repository.full_name}}</strong></p>
-
-                      <p>{{repository.description}}</p>
+                    <div class="media-heading">
+                      <h4 style="display: inline">{{repository.name}}</h4>
+                      <span class="pull-right">
+                        <span class="badge">
+                          <i class="fa fa-star"></i> {{repository.stargazers_count}}
+                        </span>
+                        <span class="badge">
+                          <i class="fa fa-code-fork"></i> {{repository.forks_count}}
+                        </span>
+                        <span class="badge">
+                          <i class="fa fa-eye"></i> {{repository.watchers_count}}
+                        </span>
+                      </span>
                     </div>
+
+                    <p><strong>{{repository.full_name}}</strong></p>
+
+                    <p>{{repository.description}}</p>
                   </div>
                 </div>
               </li>
             </ul>
+          </div>
+        </div>
+        <div ng-if="repositoriesPage.items.length > 0" class="row">
+          <div class="col-md-12">
+            <div class="text-center">
+              <ul class="pagination">
+                <li ng-class="{'disabled': _.isEmpty(pageLinks.first)}">
+                  <a href="" ng-click="goToPage(pageLinks.first)">&lt;&lt;</a>
+                </li>
+                <li ng-class="{'disabled': _.isEmpty(pageLinks.prev)}">
+                  <a href="" ng-click="goToPage(pageLinks.prev)">&lt;</a>
+                </li>
+                <li class="disabled">
+                  <a href="">{{page || 1}}</a>
+                </li>
+                <li ng-class="{'disabled': _.isEmpty(pageLinks.next)}">
+                  <a href="" ng-click="goToPage(pageLinks.next)">&gt;</a>
+                </li>
+                <li ng-class="{'disabled': _.isEmpty(pageLinks.last)}">
+                  <a href="" ng-click="goToPage(pageLinks.last)">&gt;&gt;</a>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
         <div ng-if="!repositoriesPage.items || repositoriesPage.items.length <= 0" class="row">

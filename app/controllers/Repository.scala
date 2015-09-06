@@ -1,11 +1,10 @@
 package controllers
 
+import java.util.regex.Pattern
 import javax.inject.Inject
 
 import models.rest.RestResponse
 import org.apache.commons.lang3.StringUtils
-import org.joda.time.DateTime
-import org.joda.time.format.DateTimeFormat
 import play.api.libs.json._
 import play.api.libs.ws.{WSAuthScheme, WSClient, WSRequest}
 import play.api.mvc.{Action, Controller}
@@ -18,7 +17,7 @@ class Repository @Inject()(ws: WSClient) extends Controller with Logging {
 
   lazy val githubPassword = play.Play.application().configuration().getString("github.password")
 
-  val dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd")
+  val linkPattern = Pattern.compile("^<http[^>]+[&?]page=([^>]+)[^>]*>; rel=\"(\\w+)\"$")
 
   def authenticateRequest(request: WSRequest) = {
     if (StringUtils.isNotBlank(githubUser) && StringUtils.isNotBlank(githubPassword)) {
@@ -28,12 +27,37 @@ class Repository @Inject()(ws: WSClient) extends Controller with Logging {
     }
   }
 
-  def searchRepositories(searchKey: String) = Action.async {
+  def getPageFromLink(linkOpt: Option[String]) = {
+    linkOpt.map { link =>
+      link.split(",").flatMap { linkEntry =>
+        val matcher = linkPattern.matcher(linkEntry.trim)
+        if (matcher.matches()) {
+          Some(matcher.group(2).trim, matcher.group(1).trim)
+        } else {
+          None
+        }
+      }.toMap
+    }.getOrElse(Map.empty)
+  }
+
+  def searchRepositories(searchKey: String, page: Option[String]) = Action.async {
     implicit request =>
-      val request: WSRequest = authenticateRequest(ws.url("https://api.github.com/search/repositories")
-        .withQueryString("q" -> searchKey, "per_page" -> "10"))
+      var request: WSRequest = authenticateRequest(ws.url("https://api.github.com/search/repositories"))
+      if (page.isDefined) {
+        request = request.withQueryString("q" -> searchKey, "per_page" -> "10", "page" -> page.get)
+      } else {
+        request = request.withQueryString("q" -> searchKey, "per_page" -> "10")
+      }
       request.get().map { response =>
-        Ok(Json.toJson(RestResponse.success[JsValue](Some(response.json))))
+        val links = getPageFromLink(response.header("link"))
+        val searchResponse = Json.obj(
+          "pages" -> Json.obj(
+            "next" -> links.get("next"),
+            "last" -> links.get("last"),
+            "prev" -> links.get("prev"),
+            "first" -> links.get("first")
+          ), "repositories" -> response.json)
+        Ok(Json.toJson(RestResponse.success[JsValue](Some(searchResponse))))
       }
   }
 
@@ -68,15 +92,9 @@ class Repository @Inject()(ws: WSClient) extends Controller with Logging {
             counterMap
           }
         }
-        val maxDateOption = latestDate(rawCommitTimeLineMap.keys.toList)
-        val commitTimeLineMap = maxDateOption.map { maxDateRaw =>
-          val endDate = DateTime.parse(maxDateRaw, dateFormat)
-          (0 until 29).map(endDate.minusDays).map { date =>
-            val dateString = dateFormat.print(date)
-            val commitCount = rawCommitTimeLineMap.getOrElse(dateString, 0)
-            Json.obj(dateString -> commitCount)
-          }.reverse.toList
-        }.getOrElse(List.empty[JsObject])
+        val commitTimeLineMap = rawCommitTimeLineMap.keys.toList.sorted.map { date =>
+          Json.obj(date -> rawCommitTimeLineMap(date))
+        }
         val commitTimeLineJson = Json.toJson(commitTimeLineMap)
         Json.obj("contributors" -> commitContributionsJson, "timeline" -> commitTimeLineJson)
       }
@@ -90,14 +108,7 @@ class Repository @Inject()(ws: WSClient) extends Controller with Logging {
             "collaborators" -> collaborators,
             "contributions" -> contributions
           )
-        ))))
-  }
-
-  def latestDate(dates: List[String]): Option[String] = {
-    dates match {
-      case Nil => None
-      case List(x: String) => Some(x)
-      case x :: y :: rest => latestDate((if (x > y) x else y) :: rest)
-    }
+        )
+      )))
   }
 }

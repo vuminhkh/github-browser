@@ -8,7 +8,7 @@ GET        /                                       controllers.Application.index
 # JavaScript routes object
 GET        /jsroutes.js                            controllers.Application.jsRoutes()
 
-GET        /repositories                           controllers.Repository.searchRepositories(searchKey: String)
+GET        /repositories                           controllers.Repository.searchRepositories(searchKey: String, page: Option[String])
 
 GET        /repositories/:owner/:repository        controllers.Repository.getRepository(owner: String, repository: String)
 # Static

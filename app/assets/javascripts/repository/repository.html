@@ -8,7 +8,18 @@
           <i ng-if="!repository.repository.owner.avatar_url" class="media-object fa fa-picture-o fa-4x"></i>
         </div>
         <div class="col-md-9">
-          <h3>{{repository.repository.full_name}}</h3>
+          <h3 style="display: inline">{{repository.repository.full_name}}</h3>
+            <span class="pull-right">
+              <span class="badge">
+                <i class="fa fa-star"></i> {{repository.repository.stargazers_count}}
+              </span>
+              <span class="badge">
+                <i class="fa fa-code-fork"></i> {{repository.repository.forks_count}}
+              </span>
+              <span class="badge">
+                <i class="fa fa-eye"></i> {{repository.repository.watchers_count}}
+              </span>
+            </span>
 
           <p>{{repository.repository.description}}</p>
         </div>
@@ -19,7 +30,7 @@
 <div class="row">
   <div class="col-md-12">
     <tabset>
-      <tab>
+      <tab active="tabContributorsActive">
         <tab-heading>
           <h4>Contributors</h4>
         </tab-heading>
@@ -30,13 +41,15 @@
                 <img class="media-object" ng-src="{{collaborator.avatar_url}}&s=60" height="50" width="50">
               </div>
               <div class="media-body">
-                <h4 class="media-heading">{{collaborator.login}}</h4>
+                <h4 class="media-heading"><strong class="text-info">#{{$index + 1}}</strong> {{collaborator.login}}</h4>
+                <span class="badge">{{repository.contributions.contributors[collaborator.login] || 0}} commits</span>
               </div>
             </div>
           </div>
           <div class="col-md-8">
-            <h4 class="text-center">Contributions</h4>
-            <canvas id="contributorsPieChart"
+            <h4 class="text-center">Contributions over last 100 commits</h4>
+            <canvas ng-if="contributorChartData && tabContributorsActive"
+                    id="contributorsPieChart"
                     class="chart chart-pie"
                     chart-data="contributorChartData"
                     chart-labels="contributorChartLabels"
@@ -45,21 +58,46 @@
           </div>
         </div>
       </tab>
-      <tab>
+      <tab active="tabActivityActive">
         <tab-heading>
           <h4>Activity</h4>
         </tab-heading>
         <div class="row" style="margin-top: 10px; margin-bottom: 10px;">
           <div class="col-md-12">
-            <h4 class="text-center">Commits</h4>
-            <canvas id="timelineChart"
-                    class="chart chart-line"
-                    chart-data="timelineChartData"
-                    chart-labels="timelineChartLabels"
-                    chart-series="timelineChartSeries">
-            </canvas>
+            <h4 class="text-center">Activity over last 100 commits</h4>
+
+            <div class="row">
+              <div class="col-md-12">
+                <div class="text-center">
+                  <ul class="pagination">
+                    <li ng-class="{'disabled': timelineChartCurrentPeriod >= timelineChartPeriodCount - 1}" class="ghb-click">
+                      <a ng-click="processAnotherPeriodTimeLineChart(timelineChartPeriodCount - 1)">&lt;&lt;</a>
+                    </li>
+                    <li ng-class="{'disabled': timelineChartCurrentPeriod >= timelineChartPeriodCount - 1}" class="ghb-click">
+                      <a ng-click="processNextPeriodTimeLineChart(1)">&lt;</a>
+                    </li>
+                    <li ng-class="{'disabled': timelineChartCurrentPeriod <= 0}" class="ghb-click">
+                      <a ng-click="processNextPeriodTimeLineChart(-1)">&gt;</a>
+                    </li>
+                    <li ng-class="{'disabled': timelineChartCurrentPeriod <= 0}" class="ghb-click">
+                      <a ng-click="processAnotherPeriodTimeLineChart(0)">&gt;&gt;</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <canvas ng-if="timelineChartData && tabActivityActive"
+                        id="timelineChart"
+                        class="chart chart-line"
+                        chart-data="timelineChartData"
+                        chart-labels="timelineChartLabels"
+                        chart-series="timelineChartSeries">
+                </canvas>
+              </div>
+            </div>
           </div>
-        </div>
       </tab>
     </tabset>
   </div>

@@ -10,8 +10,7 @@ define(['angular', './controllers', 'common'], function(angular, controllers) {
       .when('/',
       {
         templateUrl: '/assets/javascripts/home/home.html',
-        controller: controllers.HomeCtrl,
-        reloadOnSearch: false
+        controller: controllers.HomeCtrl
       })
       .otherwise({templateUrl: '/assets/javascripts/home/notFound.html'});
   }]);
